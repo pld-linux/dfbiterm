@@ -2,13 +2,14 @@ Summary:	Terminal emulator for DirectFB
 Summary(pl):	Emulator terminala dla DirectFB
 Name:		dfbiterm
 Version:	0.1
-Release:	1
+Release:	2
 License:	GPL v2
 Group:		Applications/Graphics
 Source0:	http://republika.pl/rkd/%{name}-%{version}.tar.bz2
 #Source0-md5:	0477c55c67815a89542ee60c861e8453
+Patch0:		%{name}-new.patch
 BuildRequires:	DirectFB-devel
-BuildRequires:	libiterm-devel >= 0.5-3
+BuildRequires:	libiterm-devel >= 0.5-4
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %description
@@ -21,6 +22,7 @@ Potrafi wy¶wietliæ 256 kolorów, tak jak xterm czy rxvt.
 
 %prep
 %setup -q
+%patch0 -p1
 
 %build
 %configure
