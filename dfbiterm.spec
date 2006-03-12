@@ -10,6 +10,7 @@ Source0:	http://republika.pl/rkd/%{name}-%{version}.tar.bz2
 Patch0:		%{name}-new.patch
 BuildRequires:	DirectFB-devel
 BuildRequires:	libiterm-devel >= 0.5-4
+Requires:	libiterm >= 0.5-4
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %description
