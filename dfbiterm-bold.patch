@@ -1,0 +1,118 @@
+diff -x '*P*' -Nru dfbiterm-0.1.old/src/dfbiterm.c dfbiterm-0.1/src/dfbiterm.c
+--- dfbiterm-0.1.old/src/dfbiterm.c	2006-02-11 18:25:02.000000000 +0100
++++ dfbiterm-0.1/src/dfbiterm.c	2006-03-16 12:33:13.209021000 +0100
+@@ -36,6 +36,7 @@
+ {
+ 	pIterm->buffer->Release(pIterm->buffer);
+ 	pIterm->font->Release(pIterm->font);
++	pIterm->boldFont->Release(pIterm->boldFont);
+ 	pIterm->window->Release(pIterm->window);
+ 	pIterm->layer->Release(pIterm->layer);
+ 	pIterm->surface->Release(pIterm->surface);
+@@ -54,10 +55,11 @@
+ static void
+ dfbiterm_usage (void)
+ {
+-  fprintf (stdout, "Usage: iterm [ -a <fontfile> ] [ -H <height> ] [ - W <width> ] [ -n ] [ -v ]\n\
++  fprintf (stdout, "Usage: dfbiterm [ -a <fontfile> ] [ -b <bold fontfile> ] [ -H <height> ] [ - W <width> ] [ -n ] [ -v ]\n\
+ \n\
+ options:\n\
+   -a <fontfile>\tascii text font\n\
++  -b <fontfile>\tbold font\n\
+   -H <height>\theight of the character cell\n\
+   -W <width>\twidth of the character cell\n\
+   -v\t\tprint version information and exit\n\
+@@ -70,7 +72,7 @@
+ int
+ main (int argc, char *argv[])
+ {
+-	unsigned char buf[BUFSIZ + 1], *ascfontname, *mbfontname;
++	unsigned char buf[BUFSIZ + 1], *ascfontname, *boldfontname;
+ 	int i;
+ 	DFBFontDescription font_dsc;
+ 	DFBSurfaceDescription dsc;
+@@ -89,11 +91,12 @@
+ 		exit (1);
+ 	}
+ 	ascfontname = DefaultFont;
++	boldfontname = DefaultFont;
+ 
+ 	font_dsc.height = 16;
+ 	font_dsc.width = 8;
+ 
+-	while ((i = getopt (argc, argv, "a:H:W:nhv")) != EOF)
++	while ((i = getopt (argc, argv, "a:b:H:W:nhv")) != EOF)
+ 		switch (i) {
+ 		case 'a':
+ 			if (optarg != NULL)
+@@ -101,6 +104,12 @@
+ 			else
+ 				ascfontname = DefaultFont;
+ 			break;
++		case 'b':
++			if (optarg != NULL)
++				boldfontname = optarg;
++			else
++				boldfontname = DefaultFont;
++			break;
+ 		case 'H':
+ 			if (optarg) {
+ 				font_dsc.height = atoi(optarg);
+@@ -118,7 +127,7 @@
+ 			}
+ 			break;
+ 		case 'v':
+-			fprintf (stdout, "fbiterm %s\n", DFBITERM_VERSION);
++			fprintf (stdout, "dfbiterm %s\n", DFBITERM_VERSION);
+ 			exit (0);
+ 			break;
+ 		case 'n':
+@@ -146,6 +155,7 @@
+ 	DFBCHECK (pIterm->surface->Clear(pIterm->surface, 0, 0, 0, 0xff));
+ 	DFBCHECK (pIterm->surface->GetSize (pIterm->surface, &pIterm->screen_width, &pIterm->screen_height));
+ 	DFBCHECK (pIterm->dfb->CreateFont (pIterm->dfb, ascfontname, &font_dsc, &pIterm->font));
++	DFBCHECK (pIterm->dfb->CreateFont (pIterm->dfb, boldfontname, &font_dsc, &pIterm->boldFont));
+ 	DFBCHECK (pIterm->surface->SetFont(pIterm->surface, pIterm->font));
+ 	DFBCHECK (pIterm->font->GetHeight(pIterm->font, &pIterm->cell_height));
+ 
+diff -x '*P*' -Nru dfbiterm-0.1.old/src/dfbiterm.h dfbiterm-0.1/src/dfbiterm.h
+--- dfbiterm-0.1.old/src/dfbiterm.h	2006-02-11 18:31:35.000000000 +0100
++++ dfbiterm-0.1/src/dfbiterm.h	2006-03-16 12:24:51.203211000 +0100
+@@ -58,6 +58,7 @@
+ 	IDirectFB *dfb;			/* DirectFB */
+ 	IDirectFBSurface *surface;
+ 	IDirectFBFont *font;
++	IDirectFBFont *boldFont;
+ 	IDirectFBPalette *palette;
+ 	IDirectFBWindow *window;
+ 	IDirectFBDisplayLayer *layer;
+diff -x '*P*' -Nru dfbiterm-0.1.old/src/VTScreenView.c dfbiterm-0.1/src/VTScreenView.c
+--- dfbiterm-0.1.old/src/VTScreenView.c	2006-03-16 12:37:24.620733250 +0100
++++ dfbiterm-0.1/src/VTScreenView.c	2006-03-16 12:24:16.937069500 +0100
+@@ -83,7 +83,12 @@
+ 	pIterm->foreground = foreground;
+ 	pIterm->background = background;
+ 	pIterm->underline = underline;
+-	pIterm->bold = bold;
++	if (pIterm->bold != bold) {
++		pIterm->bold = bold;
++		if (bold) pIterm->surface->SetFont(pIterm->surface, pIterm->boldFont);
++		else pIterm->surface->SetFont(pIterm->surface, pIterm->font);
++	}
++
+ 	if (inverse) {
+ 		pIterm->background = foreground;
+ 		pIterm->foreground = background;
+--- /dev/null	2005-12-16 15:50:26.000000000 +0100
++++ dfbiterm-0.1/przeczytajto.txt	2006-03-16 18:18:21.787424500 +0100
+@@ -0,0 +1,10 @@
++dfbiterm przyjmuje nastêpuj±ce parametry:
++-a font - normalna czcionka
++-b boldfont - czcionka pogrubiona
++-H wysoko¶æ - wysoko¶æ fontu, nale¿y j± podaæ, gdy inna ni¿ 16
++-W szeroko¶æ - szeroko¶æ fontu, nale¿y j± podaæ, gdy ró¿na ni¿ 8
++
++Nale¿y wybraæ fonty o jednakowej wysoko¶ci i szeroko¶ci.
++
++Przyk³ad:
++$ dfbiterm -a /usr/share/fonts/misc/8x13.pcf.gz -b /usr/share/fonts/misc/8x13B.pcf.gz -H 13
