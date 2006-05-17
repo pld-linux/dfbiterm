@@ -12,6 +12,7 @@ Patch1:		%{name}-bold.patch
 BuildRequires:	DirectFB-devel
 BuildRequires:	libiterm-devel >= 0.5-4
 Requires:	libiterm >= 0.5-4
+Requires:	DirectFB-font-ft2
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %description
