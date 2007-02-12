@@ -1,5 +1,5 @@
 Summary:	Terminal emulator for DirectFB
-Summary(pl):	Emulator terminala dla DirectFB
+Summary(pl.UTF-8):   Emulator terminala dla DirectFB
 Name:		dfbiterm
 Version:	0.3
 Release:	1
@@ -17,9 +17,9 @@ BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 dfbiterm is a terminal application for DirectFB.
 It is capable to display 256 colors like xterm or rxvt.
 
-%description -l pl
+%description -l pl.UTF-8
 dfbiterm to emulator terminala dla DirectFB.
-Potrafi wy¶wietliæ 256 kolorów, tak jak xterm czy rxvt.
+Potrafi wyÅ›wietliÄ‡ 256 kolorÃ³w, tak jak xterm czy rxvt.
 
 %prep
 %setup -q
