@@ -1,5 +1,5 @@
 Summary:	Terminal emulator for DirectFB
-Summary(pl.UTF-8):   Emulator terminala dla DirectFB
+Summary(pl.UTF-8):	Emulator terminala dla DirectFB
 Name:		dfbiterm
 Version:	0.3
 Release:	1
